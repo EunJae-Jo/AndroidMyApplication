@@ -1,14 +1,24 @@
 package com.example.myapplication.home;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.myapplication.R;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +35,9 @@ public class HomeMainFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private PieChart chart;
 
     public HomeMainFragment() {
         // Required empty public constructor
@@ -61,6 +74,45 @@ public class HomeMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_main, container, false);
+        View v = inflater.inflate(R.layout.fragment_home_main, container, false);
+        PieChart pieChart = v.findViewById(R.id.pieChart1);
+        ArrayList NoOfEmp = new ArrayList();
+
+        NoOfEmp.add(new Entry(945f, 0));
+        NoOfEmp.add(new Entry(1040f, 1));
+        NoOfEmp.add(new Entry(1133f, 2));
+        NoOfEmp.add(new Entry(1240f, 3));
+        NoOfEmp.add(new Entry(1369f, 4));
+        NoOfEmp.add(new Entry(1487f, 5));
+        NoOfEmp.add(new Entry(1501f, 6));
+        NoOfEmp.add(new Entry(1645f, 7));
+        NoOfEmp.add(new Entry(1578f, 8));
+        NoOfEmp.add(new Entry(1695f, 9));
+        PieData data = generatePieData();          // MPAndroidChart v3.X 오류 발생
+        pieChart.setData(data);
+        pieChart.animateXY(5000, 5000);
+
+        return v;
     }
+
+    protected PieData generatePieData() {
+
+        int count = 4;
+
+        ArrayList<PieEntry> entries1 = new ArrayList<>();
+
+        for(int i = 0; i < count; i++) {
+            entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Quarter " + (i+1)));
+        }
+
+        PieDataSet ds1 = new PieDataSet(entries1, "Quarterly Revenues 2015");
+        ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        ds1.setSliceSpace(2f);
+        ds1.setValueTextColor(Color.WHITE);
+        ds1.setValueTextSize(12f);
+
+        PieData d = new PieData(ds1);
+        return d;
+    }
+
 }
