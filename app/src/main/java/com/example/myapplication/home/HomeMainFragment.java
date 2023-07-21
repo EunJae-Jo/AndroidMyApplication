@@ -36,9 +36,6 @@ public class HomeMainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private PieChart chart;
-
     public HomeMainFragment() {
         // Required empty public constructor
     }
@@ -77,7 +74,6 @@ public class HomeMainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home_main, container, false);
         PieChart pieChart = v.findViewById(R.id.pieChart1);
         ArrayList NoOfEmp = new ArrayList();
-
         NoOfEmp.add(new Entry(945f, 0));
         NoOfEmp.add(new Entry(1040f, 1));
         NoOfEmp.add(new Entry(1133f, 2));
@@ -90,7 +86,27 @@ public class HomeMainFragment extends Fragment {
         NoOfEmp.add(new Entry(1695f, 9));
         PieData data = generatePieData();          // MPAndroidChart v3.X 오류 발생
         pieChart.setData(data);
-        pieChart.animateXY(5000, 5000);
+        //pieChart.animateXY(5000, 5000);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.getDescription().setEnabled(false);
+
+        PieChart energyRateChart = v.findViewById(R.id.energyRateChart);
+        ArrayList energyRateChartList = new ArrayList();
+        energyRateChartList.add(new Entry(945f, 0));
+        energyRateChartList.add(new Entry(1040f, 1));
+        energyRateChartList.add(new Entry(1133f, 2));
+        energyRateChartList.add(new Entry(1240f, 3));
+        energyRateChartList.add(new Entry(1369f, 4));
+        energyRateChartList.add(new Entry(1487f, 5));
+        energyRateChartList.add(new Entry(1501f, 6));
+        energyRateChartList.add(new Entry(1645f, 7));
+        energyRateChartList.add(new Entry(1578f, 8));
+        energyRateChartList.add(new Entry(1695f, 9));
+        data = generatePieData();          // MPAndroidChart v3.X 오류 발생
+        energyRateChart.setData(data);
+        //energyRateChart.animateXY(5000, 5000);
+        energyRateChart.getLegend().setEnabled(false);
+        energyRateChart.getDescription().setEnabled(false);
 
         return v;
     }

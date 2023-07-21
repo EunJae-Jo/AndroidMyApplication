@@ -36,5 +36,4 @@
         android:title="Setting"
         app:showAsAction="always"
         />
-
 </menu>
