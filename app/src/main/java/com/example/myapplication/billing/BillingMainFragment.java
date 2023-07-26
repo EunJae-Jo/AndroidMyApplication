@@ -2,13 +2,18 @@ package com.example.myapplication.billing;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.myapplication.R;
+import com.example.myapplication.meterdata.ViewPager2AdapterMeterData;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +66,29 @@ public class BillingMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_billing_main, container, false);
+        View v= inflater.inflate(R.layout.fragment_billing_main, container, false);
+        // Inflate the layout for this fragment
+        ViewPager2AdapterBilling viewPager2Adapter
+                = new ViewPager2AdapterBilling(getChildFragmentManager(), getLifecycle());
+        ViewPager2 viewPager2 = v.findViewById(R.id.viewPager);
+        viewPager2.setAdapter(viewPager2Adapter);
+        viewPager2.setSaveEnabled(false);
+
+        //=== TabLayout기능 추가 부분 ============================================
+        TabLayout tabLayout = v.findViewById(R.id.tabLayout);
+        new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                if(position == 0)
+                {
+                    tab.setText("Realtime Billing");
+                } else if (position == 1) {
+                    tab.setText("Monthly Bill");
+                } else {
+                    tab.setText("Neighbor comparing");
+                }
+            }
+        }).attach();
+        return v;
     }
 }

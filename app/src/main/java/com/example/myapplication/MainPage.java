@@ -1,7 +1,10 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import com.example.myapplication.home.HomeMainFragment;
 import com.example.myapplication.meterdata.MeterDataMainFragment;
 import com.example.myapplication.pattern.PatternMainFragment;
 import com.example.myapplication.setting.SettingMainFragment;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainPage extends AppCompatActivity {
@@ -19,7 +23,7 @@ public class MainPage extends AppCompatActivity {
     MeterDataMainFragment meterDataMainFragment;
     PatternMainFragment patternMainFragment;
     SettingMainFragment settingMainFragment;
-
+    BottomAppBar bottomAppBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +60,5 @@ public class MainPage extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 }

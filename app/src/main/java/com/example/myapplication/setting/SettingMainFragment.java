@@ -2,13 +2,18 @@ package com.example.myapplication.setting;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.myapplication.R;
+import com.example.myapplication.pattern.ViewPager2AdapterPattern;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +66,32 @@ public class SettingMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting_main, container, false);
+        View v = inflater.inflate(R.layout.fragment_setting_main, container, false);
+        ViewPager2AdapterSetting viewPager2Adapter
+                = new ViewPager2AdapterSetting(getChildFragmentManager(), getLifecycle());
+        ViewPager2 viewPager2 = v.findViewById(R.id.viewPager);
+        viewPager2.setAdapter(viewPager2Adapter);
+        viewPager2.setSaveEnabled(false);
+
+        //=== TabLayout기능 추가 부분 ============================================
+        TabLayout tabLayout = v.findViewById(R.id.tabLayout);
+        new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                if(position == 0)
+                {
+                    tab.setText("NOTICE");
+                } else if (position == 1) {
+                    tab.setText("Use Goal Notification");
+                } else if (position == 2) {
+                    tab.setText("PROGRESSIVE");
+                } else if (position == 3) {
+                    tab.setText("CUSTOMER MANAGEMENT");
+                } else {
+                    tab.setText("SETTING");
+                }
+            }
+        }).attach();
+        return v;
     }
 }

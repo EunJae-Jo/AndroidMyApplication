@@ -1,4 +1,4 @@
-package com.example.myapplication.pattern;
+package com.example.myapplication.billing;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
@@ -15,34 +15,22 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PatternDayFragment#newInstance} factory method to
+ * Use the {@link BillingRealtimeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PatternDayFragment extends Fragment {
+public class BillingRealtimeFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,7 +41,7 @@ public class PatternDayFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public PatternDayFragment() {
+    public BillingRealtimeFragment() {
         // Required empty public constructor
     }
 
@@ -66,8 +54,8 @@ public class PatternDayFragment extends Fragment {
      * @return A new instance of fragment MeterDataMainFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PatternDayFragment newInstance(String param1, String param2) {
-        PatternDayFragment fragment = new PatternDayFragment();
+    public static BillingRealtimeFragment newInstance(String param1, String param2) {
+        BillingRealtimeFragment fragment = new BillingRealtimeFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -86,13 +74,12 @@ public class PatternDayFragment extends Fragment {
     TextView editTextDate;
     DatePickerDialog datePickerDialog;
     Switch generalSwitch;
-    PieChart pieChart;
-    LineChart lineChart;
+    RadarChart radarChart;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_pattern_day, container, false);
+        View v = inflater.inflate(R.layout.fragment_billing_realtime, container, false);
 
         editTextDate = v.findViewById(R.id.editTextDate);
         editTextDate.setText(getCurrentDate());
@@ -134,32 +121,10 @@ public class PatternDayFragment extends Fragment {
             }
         });
 
-        pieChart = v.findViewById(R.id.pieChart);
-        ArrayList energyRateChartList = new ArrayList();
-        energyRateChartList.add(new Entry(945f, 0));
-        energyRateChartList.add(new Entry(1040f, 1));
-        energyRateChartList.add(new Entry(1133f, 2));
-        energyRateChartList.add(new Entry(1240f, 3));
-        energyRateChartList.add(new Entry(1369f, 4));
-        energyRateChartList.add(new Entry(1487f, 5));
-        energyRateChartList.add(new Entry(1501f, 6));
-        energyRateChartList.add(new Entry(1645f, 7));
-        energyRateChartList.add(new Entry(1578f, 8));
-        energyRateChartList.add(new Entry(1695f, 9));
-        PieData data = generatePieData();          // MPAndroidChart v3.X 오류 발생
-        pieChart.setData(data);
-        //energyRateChart.animateXY(5000, 5000);
-        pieChart.getLegend().setEnabled(false);
-        pieChart.getDescription().setEnabled(false);
-
-        lineChart = v.findViewById(R.id.lineChart);
-        lineChart.getLegend().setEnabled(false);// Legend는 차트의 범례
-        lineChart.getDescription().setEnabled(false);// chart 밑에 description 표시 유무
-        lineChart.setTouchEnabled(false); // 터치 유무
-
-        initChart_line();
-        makeChart_line();
-
+        radarChart = v.findViewById(R.id.radar_chart);
+        radarChart.getLegend().setEnabled(false);
+        radarChart.getDescription().setEnabled(false);
+        makeChart();
         return v;
     }
 
@@ -178,64 +143,26 @@ public class PatternDayFragment extends Fragment {
         return pYear + "-" + monthS + "-" + dayS;
     }
 
-    protected PieData generatePieData() {
+    private void makeChart(){
+        RadarDataSet dataSet = new RadarDataSet(dataValue(), "DATA");
+        dataSet.setColor(Color.BLUE);
 
-        int count = 4;
-
-        ArrayList<PieEntry> entries1 = new ArrayList<>();
-
-        for(int i = 0; i < count; i++) {
-            entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Quarter " + (i+1)));
-        }
-
-        PieDataSet ds1 = new PieDataSet(entries1, "Quarterly Revenues 2015");
-        ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
-        ds1.setSliceSpace(2f);
-        ds1.setValueTextColor(Color.WHITE);
-        ds1.setValueTextSize(12f);
-
-        PieData d = new PieData(ds1);
-        return d;
-    }
-
-    private void initChart_line(){
-        ArrayList<String> xAxisVals = new ArrayList<String>(Arrays.asList("07/02","07/03","07/04","07/05","07/06","07/08","07/09"));
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setDrawAxisLine(false);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisVals));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        YAxis axisLeft = lineChart.getAxisLeft();
-        axisLeft.setDrawGridLines(false);
-        axisLeft.setDrawAxisLine(false);
-        YAxis axisRight = lineChart.getAxisRight();
-        axisRight.setDrawLabels(false); // label 삭제
-        axisRight.setDrawGridLines(false);
-        axisRight.setDrawAxisLine(false);
-    }
-    private void makeChart_line(){
-        LineDataSet[] dataSet = new LineDataSet[2];
-        LineData data = new LineData();
-        for(int i=0;i<dataSet.length;i++)
+        RadarData data = new RadarData();
+        data.addDataSet(dataSet);
+        String[] labels = new String[24];
+        for(int i=0;i<labels.length;i++)
         {
-            dataSet[i] = new LineDataSet(dataValue_line(),"data"+i);
-            if(i==0)
-                dataSet[i].setColor(Color.rgb(255, 155, 155));
-            else
-                dataSet[i].setColor(Color.rgb(178, 223, 138));
-            dataSet[i].setDrawCircles(true);
-            dataSet[i].setDrawValues(false);
-            //dataSet.setColors(new int[] {Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW});
-
-            data.addDataSet(dataSet[i]);
-            lineChart.setData(data);
+            labels[i] = (i+1)+"";
         }
+        XAxis xAxis = radarChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        radarChart.setData(data);
     }
-    private ArrayList<Entry> dataValue_line(){
-        ArrayList<Entry> dataVals = new ArrayList<>();
-        for(int i=0;i<7;i++)
+    private ArrayList<RadarEntry> dataValue(){
+        ArrayList<RadarEntry> dataVals = new ArrayList<>();
+        for(int i=0;i<24;i++)
         {
-            float val1 = (float) (Math.random()); // 앱1 값
-            dataVals.add(new BarEntry(i,val1));
+            dataVals.add(new RadarEntry((i+10)));
         }
         return  dataVals;
     }

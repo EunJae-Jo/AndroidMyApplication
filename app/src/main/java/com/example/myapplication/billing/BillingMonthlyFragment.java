@@ -1,4 +1,4 @@
-package com.example.myapplication.pattern;
+package com.example.myapplication.billing;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
@@ -16,15 +16,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
@@ -34,10 +30,10 @@ import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PatternWeekFragment#newInstance} factory method to
+ * Use the {@link BillingMonthlyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PatternWeekFragment extends Fragment {
+public class BillingMonthlyFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,7 +44,7 @@ public class PatternWeekFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public PatternWeekFragment() {
+    public BillingMonthlyFragment() {
         // Required empty public constructor
     }
 
@@ -61,8 +57,8 @@ public class PatternWeekFragment extends Fragment {
      * @return A new instance of fragment MeterDataMainFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PatternWeekFragment newInstance(String param1, String param2) {
-        PatternWeekFragment fragment = new PatternWeekFragment();
+    public static BillingMonthlyFragment newInstance(String param1, String param2) {
+        BillingMonthlyFragment fragment = new BillingMonthlyFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -83,12 +79,11 @@ public class PatternWeekFragment extends Fragment {
     DatePickerDialog datePickerDialog;
     Switch generalSwitch;
     BarChart barChart;
-    LineChart lineChart;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_pattern_week, container, false);
+        View v = inflater.inflate(R.layout.fragment_billing_monthly, container, false);
 
         editTextStartDate = v.findViewById(R.id.editTextStartDate);
         editTextStartDate.setText(getCurrentDate());
@@ -166,14 +161,6 @@ public class PatternWeekFragment extends Fragment {
 
         initChart();
         makeChart();
-
-        lineChart = v.findViewById(R.id.lineChart);
-        lineChart.getLegend().setEnabled(false);// Legend는 차트의 범례
-        lineChart.getDescription().setEnabled(false);// chart 밑에 description 표시 유무
-        lineChart.setTouchEnabled(false); // 터치 유무
-
-        initChart_line();
-        makeChart_line();
         return v;
     }
 
@@ -223,47 +210,6 @@ public class PatternWeekFragment extends Fragment {
         for(int i=0;i<7;i++)
         {
             dataVals.add(new BarEntry(i,i+1));
-        }
-        return  dataVals;
-    }
-    private void initChart_line(){
-        ArrayList<String> xAxisVals = new ArrayList<String>(Arrays.asList("07/02","07/03","07/04","07/05","07/06","07/08","07/09"));
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setDrawAxisLine(false);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisVals));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        YAxis axisLeft = lineChart.getAxisLeft();
-        axisLeft.setDrawGridLines(false);
-        axisLeft.setDrawAxisLine(false);
-        YAxis axisRight = lineChart.getAxisRight();
-        axisRight.setDrawLabels(false); // label 삭제
-        axisRight.setDrawGridLines(false);
-        axisRight.setDrawAxisLine(false);
-    }
-    private void makeChart_line(){
-        LineDataSet[] dataSet = new LineDataSet[2];
-        LineData data = new LineData();
-        for(int i=0;i<dataSet.length;i++)
-        {
-            dataSet[i] = new LineDataSet(dataValue_line(),"data"+i);
-            if(i==0)
-                dataSet[i].setColor(Color.rgb(255, 155, 155));
-            else
-                dataSet[i].setColor(Color.rgb(178, 223, 138));
-            dataSet[i].setDrawCircles(true);
-            dataSet[i].setDrawValues(false);
-            //dataSet.setColors(new int[] {Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW});
-
-            data.addDataSet(dataSet[i]);
-            lineChart.setData(data);
-        }
-    }
-    private ArrayList<Entry> dataValue_line(){
-        ArrayList<Entry> dataVals = new ArrayList<>();
-        for(int i=0;i<7;i++)
-        {
-            float val1 = (float) (Math.random()); // 앱1 값
-            dataVals.add(new BarEntry(i,val1));
         }
         return  dataVals;
     }
