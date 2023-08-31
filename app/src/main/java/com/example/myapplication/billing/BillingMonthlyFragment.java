@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ExpandableListView;
 import android.widget.Switch;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -74,90 +76,47 @@ public class BillingMonthlyFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    TextView editTextStartDate;
-    TextView editTextEndDate;
-    DatePickerDialog datePickerDialog;
-    Switch generalSwitch;
+
     BarChart barChart;
+    ExpandableListView listView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_billing_monthly, container, false);
 
-        editTextStartDate = v.findViewById(R.id.editTextStartDate);
-        editTextStartDate.setText(getCurrentDate());
-
-        editTextStartDate.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
-                int pYear = calendar.get(Calendar.YEAR);
-                int pMonth = calendar.get(Calendar.MONTH);
-                int pDay = calendar.get(Calendar.DAY_OF_MONTH);
-
-                datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        month = month + 1;
-                        String monthS = ""+month;
-                        String dayS = ""+day;
-                        if(month<10)
-                            monthS = "0"+month;
-                        if(day<10)
-                            dayS = "0"+day;
-                        String date = year + "-" + monthS + "-" + dayS;
-                        editTextStartDate.setText(date);
-                    }
-                }, pYear, pMonth, pDay);
-                datePickerDialog.show();
-            }
-        });
-
-        editTextEndDate = v.findViewById(R.id.editTextEndDate);
-        editTextEndDate.setText(getCurrentDate());
-
-        editTextEndDate.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
-                int pYear = calendar.get(Calendar.YEAR);
-                int pMonth = calendar.get(Calendar.MONTH);
-                int pDay = calendar.get(Calendar.DAY_OF_MONTH);
-
-                datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        month = month + 1;
-                        String monthS = ""+month;
-                        String dayS = ""+day;
-                        if(month<10)
-                            monthS = "0"+month;
-                        if(day<10)
-                            dayS = "0"+day;
-                        String date = year + "-" + monthS + "-" + dayS;
-                        editTextEndDate.setText(date);
-                    }
-                }, pYear, pMonth, pDay);
-                datePickerDialog.show();
-            }
-        });
-
-        generalSwitch = v.findViewById(R.id.generalSwitch);
-        generalSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b)
-                    generalSwitch.setTypeface(null, Typeface.BOLD);
-                else
-                    generalSwitch.setTypeface(null, Typeface.NORMAL);
-            }
-        });
-
         barChart = v.findViewById(R.id.barChart);
         barChart.getLegend().setEnabled(false);// Legend는 차트의 범례
         barChart.getDescription().setEnabled(false);// chart 밑에 description 표시 유무
         barChart.setTouchEnabled(false); // 터치 유무
+
+        String[] date = {"2018년","2019년","2020년","2021년","2022년","2023년"};
+        TableLayout[] tableLayout = new TableLayout[date.length];
+        ArrayList<BillingDataGroup> dataList = new ArrayList<BillingDataGroup>();
+        listView = (ExpandableListView)v.findViewById(R.id.expandableListView);
+        for(int i=0;i<date.length;i++)
+        {
+            BillingDataGroup temp = new BillingDataGroup(date[i]);
+            String[] tmp = {"a,b,c,d","e,f,g,h","i,j,k,l"};
+            if(i==0)
+                tmp = new String[] {"a,b,c,d"};
+            else if (i==1) {
+                tmp = new String[]{"a,b,c,d", "e,f,g,h"};
+            }
+            else if (i==2) {
+                tmp = new String[]{"a,b,c,d", "e,f,g,h", "i,j,k,l"};
+            }
+            else
+            {
+                tmp = new String[]{"a,b,c,d", "e,f,g,h", "i,j,k,l", "m,n,o,p"};
+            }
+            temp.data = tmp;
+            dataList.add(temp);
+        }
+
+        ExpandAdapter adapter = new ExpandAdapter(getActivity().getApplicationContext(),R.layout.billing_monthly_parent,R.layout.billing_monthly_child,dataList,tableLayout);
+        //listView.setIndicatorBounds(width-50, width); //이 코드를 지우면 화살표 위치가 바뀐다.
+        listView.setAdapter(adapter);
 
         initChart();
         makeChart();

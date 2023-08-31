@@ -9,18 +9,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,60 +81,42 @@ public class BillingRealtimeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    TextView editTextDate;
-    DatePickerDialog datePickerDialog;
-    Switch generalSwitch;
-    RadarChart radarChart;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_billing_realtime, container, false);
 
-        editTextDate = v.findViewById(R.id.editTextDate);
-        editTextDate.setText(getCurrentDate());
+        PieChart pieChart = v.findViewById(R.id.pieChart);
 
-        editTextDate.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
-                int pYear = calendar.get(Calendar.YEAR);
-                int pMonth = calendar.get(Calendar.MONTH);
-                int pDay = calendar.get(Calendar.DAY_OF_MONTH);
+        PieData data = generatePieData();          // MPAndroidChart v3.X 오류 발생
+        pieChart.setData(data);
+        //pieChart.animateXY(5000, 5000);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.getDescription().setEnabled(false);
 
-                datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        month = month + 1;
-                        String monthS = ""+month;
-                        String dayS = ""+day;
-                        if(month<10)
-                            monthS = "0"+month;
-                        if(day<10)
-                            dayS = "0"+day;
-                        String date = year + "-" + monthS + "-" + dayS;
-                        editTextDate.setText(date);
-                    }
-                }, pYear, pMonth, pDay);
-                datePickerDialog.show();
-            }
-        });
+        pieChart.setRotationEnabled(false);
+        pieChart.setHoleRadius(50f);        // increase hole radius
+        pieChart.setMaxAngle(180.0f);
+        pieChart.setRotationAngle(180.0f);
+        //pieChart.setCenterTextSize(30);
+        //pieChart.setCenterText("Reward Points: 150");//new line
 
-        generalSwitch = v.findViewById(R.id.generalSwitch);
-        generalSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b)
-                    generalSwitch.setTypeface(null, Typeface.BOLD);
-                else
-                    generalSwitch.setTypeface(null, Typeface.NORMAL);
-            }
-        });
+        LinearLayout linearLayoutV = (LinearLayout) v.findViewById(R.id.linearLayoutV);
+        for(int i=0;i<4;i++)
+        {
+            LinearLayout linearLayoutH = new LinearLayout(this.getContext());
+            TextView month = new TextView(linearLayoutH.getContext());
+            month.setText((i+1)+" Month");
 
-        radarChart = v.findViewById(R.id.radar_chart);
-        radarChart.getLegend().setEnabled(false);
-        radarChart.getDescription().setEnabled(false);
-        makeChart();
+            TextView value = new TextView(linearLayoutH.getContext());
+            value.setText("₩ 123,123");
+            linearLayoutH.addView(month);
+            linearLayoutH.addView(value);
+            linearLayoutV.addView(linearLayoutH);
+        }
+
         return v;
     }
 
@@ -142,28 +134,31 @@ public class BillingRealtimeFragment extends Fragment {
             dayS = "0"+pDay;
         return pYear + "-" + monthS + "-" + dayS;
     }
+    protected PieData generatePieData() {
 
-    private void makeChart(){
-        RadarDataSet dataSet = new RadarDataSet(dataValue(), "DATA");
-        dataSet.setColor(Color.BLUE);
+        int count = 3;
 
-        RadarData data = new RadarData();
-        data.addDataSet(dataSet);
-        String[] labels = new String[24];
-        for(int i=0;i<labels.length;i++)
-        {
-            labels[i] = (i+1)+"";
+        ArrayList<PieEntry> entries1 = new ArrayList<>();
+
+        for(int i = 0; i < count; i++) {
+            //entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), (i+1) + "step\r\n ₩ " + (i+100)));
+            entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), (i+1) + "step"));
         }
-        XAxis xAxis = radarChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
-        radarChart.setData(data);
+
+        PieDataSet ds1 = new PieDataSet(entries1, "");
+        ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        ds1.setSliceSpace(2f);
+        ds1.setValueTextColor(Color.WHITE);
+        ds1.setValueTextSize(12f);
+        ds1.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                String sValue = "₩" + String.valueOf(value);
+                return sValue;
+            }
+        });
+        PieData d = new PieData(ds1);
+        return d;
     }
-    private ArrayList<RadarEntry> dataValue(){
-        ArrayList<RadarEntry> dataVals = new ArrayList<>();
-        for(int i=0;i<24;i++)
-        {
-            dataVals.add(new RadarEntry((i+10)));
-        }
-        return  dataVals;
-    }
+
 }
