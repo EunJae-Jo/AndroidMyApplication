@@ -4,10 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,11 +61,27 @@ public class SettingCustomerFragment extends Fragment {
         }
     }
 
+    ListView listView;
+    CustomerListAdapter listAdapter;
+    TextView textViewCurrentPage;
+    ArrayList<CustomerORM> itemArrayList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_setting_customer, container, false);
+
+        listView = v.findViewById(R.id.listView);
+
+        itemArrayList = new ArrayList<CustomerORM>();
+        for(int i=1;i<35;i++)
+            if(i<20)
+                itemArrayList.add(new CustomerORM(i+1000000,"customer"+i,true,"OK"));
+            else
+                itemArrayList.add(new CustomerORM(i+1000000,"customer"+i,false,"NO"));
+
+        listAdapter = new CustomerListAdapter(getActivity().getApplicationContext(),itemArrayList);
+        listView.setAdapter(listAdapter);
         return v;
     }
 }

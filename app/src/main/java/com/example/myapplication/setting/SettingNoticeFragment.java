@@ -5,6 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -15,6 +20,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
@@ -65,11 +71,74 @@ public class SettingNoticeFragment extends Fragment {
         }
     }
 
+    ListView listView;
+    NoticeListAdapter listAdapter;
+    TextView textViewCurrentPage;
+    Button buttonPrevious,buttonNext;
+    NoticePaginator p;
+    private int currentPage = 0;
+    private int totalPages = 0;
+    ArrayList<NoticeORM> itemArrayList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_setting_notice, container, false);
+
+        listView = v.findViewById(R.id.listView);
+        textViewCurrentPage = v.findViewById(R.id.textViewCurrentPage);
+        buttonPrevious = v.findViewById(R.id.buttonPrevious);
+        buttonNext = v.findViewById(R.id.buttonNext);
+
+        itemArrayList = new ArrayList<NoticeORM>();
+        for(int i=1;i<35;i++)
+            itemArrayList.add(new NoticeORM("Notice"+i,"date"+i));
+
+        p = new NoticePaginator(itemArrayList);
+        totalPages = p.getTotalPages();
+
+        bindData(currentPage);
+        buttonPrevious.setEnabled(false);
+
+        buttonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentPage -= 1 ;
+                bindData(currentPage);
+                toggleButtons();
+            }
+        });
+
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentPage += 1 ;
+                bindData(currentPage);
+                toggleButtons();
+            }
+        });
         return v;
+    }
+    private void bindData(int page){
+        listAdapter = new NoticeListAdapter(getActivity().getApplicationContext(),p.getCurrent(page));
+        listView.setAdapter(listAdapter);
+        textViewCurrentPage.setText((String.valueOf(currentPage+1)));
+    }
+    private void toggleButtons() {
+        if (totalPages <= 1)
+        {
+            buttonPrevious.setEnabled(false);
+            buttonNext.setEnabled(false);
+        } else if (currentPage == totalPages) {
+            buttonPrevious.setEnabled(true);
+            buttonNext.setEnabled(false);
+        } else if (currentPage == 0) {
+            buttonPrevious.setEnabled(false);
+            buttonNext.setEnabled(true);
+        } else if (currentPage >=1 && currentPage <= totalPages) {
+            buttonPrevious.setEnabled(true);
+            buttonNext.setEnabled(true);
+        }
     }
 }

@@ -4,10 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,11 +61,73 @@ public class SettingProgressiveFragment extends Fragment {
         }
     }
 
+    ListView listView;
+    ProgressiveListAdapter listAdapter;
+    TextView textViewCurrentPage;
+    Button buttonPrevious,buttonNext;
+    ProgressivePaginator p;
+    private int currentPage = 0;
+    private int totalPages = 0;
+    ArrayList<ProgressiveORM> itemArrayList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_setting_progressive, container, false);
+
+        listView = v.findViewById(R.id.listView);
+        textViewCurrentPage = v.findViewById(R.id.textViewCurrentPage);
+        buttonPrevious = v.findViewById(R.id.buttonPrevious);
+        buttonNext = v.findViewById(R.id.buttonNext);
+
+        itemArrayList = new ArrayList<ProgressiveORM>();
+        for(int i=1;i<35;i++)
+            itemArrayList.add(new ProgressiveORM("Progressive"+i,"date"+i));
+
+        p = new ProgressivePaginator(itemArrayList);
+        totalPages = p.getTotalPages();
+
+        bindData(currentPage);
+        buttonPrevious.setEnabled(false);
+
+        buttonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentPage -= 1 ;
+                bindData(currentPage);
+                toggleButtons();
+            }
+        });
+
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentPage += 1 ;
+                bindData(currentPage);
+                toggleButtons();
+            }
+        });
         return v;
+    }
+    private void bindData(int page){
+        listAdapter = new ProgressiveListAdapter(getActivity().getApplicationContext(),p.getCurrent(page));
+        listView.setAdapter(listAdapter);
+        textViewCurrentPage.setText((String.valueOf(currentPage+1)));
+    }
+    private void toggleButtons() {
+        if (totalPages <= 1)
+        {
+            buttonPrevious.setEnabled(false);
+            buttonNext.setEnabled(false);
+        } else if (currentPage == totalPages) {
+            buttonPrevious.setEnabled(true);
+            buttonNext.setEnabled(false);
+        } else if (currentPage == 0) {
+            buttonPrevious.setEnabled(false);
+            buttonNext.setEnabled(true);
+        } else if (currentPage >=1 && currentPage <= totalPages) {
+            buttonPrevious.setEnabled(true);
+            buttonNext.setEnabled(true);
+        }
     }
 }
