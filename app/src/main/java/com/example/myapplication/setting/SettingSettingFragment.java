@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
+import com.github.angads25.toggle.interfaces.OnToggledListener;
+import com.github.angads25.toggle.model.ToggleableView;
+import com.github.angads25.toggle.widget.LabeledSwitch;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,12 +58,23 @@ public class SettingSettingFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
+    LabeledSwitch toggle1;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_setting_setting, container, false);
+        toggle1 = v.findViewById(R.id.toogleNotification);
+        toggle1.setOnToggledListener(new OnToggledListener() {
+            @Override
+            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+                if(isOn)
+                {
+
+                }
+            }
+        });
+
         return v;
     }
 }
