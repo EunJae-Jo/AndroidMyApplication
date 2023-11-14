@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         //회원가입 버튼 클릭시, 회원가입 페이지로 이동
         sign.setOnClickListener(v -> {
-            Intent intent = new Intent(this, Signup.class);
+            Intent intent = new Intent(this, ForgotPassword.class);
             startActivity(intent);
         });
 

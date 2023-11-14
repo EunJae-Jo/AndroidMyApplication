@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Signup" />
+        <activity android:name=".ForgotPassword" />
         <activity android:name=".MainPage" />
     </application>
 

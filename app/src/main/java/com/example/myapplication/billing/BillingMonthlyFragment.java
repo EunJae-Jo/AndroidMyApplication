@@ -99,7 +99,7 @@ public class BillingMonthlyFragment extends Fragment {
             BillingDataGroup temp = new BillingDataGroup(date[i]);
             String[] tmp = {"a,b,c,d","e,f,g,h","i,j,k,l"};
             if(i==0)
-                tmp = new String[] {"a,b,c,d"};
+                tmp = new String[] {"Jan,2step,289,44320","Feb,2step,306,44920","Mar,2step,317,44320","Apr,2step,344,48320"};
             else if (i==1) {
                 tmp = new String[]{"a,b,c,d", "e,f,g,h"};
             }

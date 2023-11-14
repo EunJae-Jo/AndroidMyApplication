@@ -70,7 +70,7 @@
 
         <TextView
             android:id="@+id/textView16"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:padding="10px"
             android:text="Notification"
@@ -119,7 +119,7 @@
 
         <TextView
             android:id="@+id/textView12"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:padding="10px"
             android:text="Notification"
@@ -129,16 +129,134 @@
             app:layout_constraintTop_toTopOf="@+id/toogleUseGoal"
             tools:ignore="MissingConstraints" />
 
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:padding="10px"
+            android:text="Auto Setting"
+            android:textColor="#317DAE"
+            app:layout_constraintBottom_toBottomOf="@+id/toogleUseGoal2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView12"
+            app:layout_constraintVertical_bias="1.0"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10px"
+            android:text="Use Goal"
+            android:textColor="#317DAE"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView17"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:padding="10px"
+            android:text="kWh"
+            android:textColor="#317DAE"
+            app:layout_constraintBottom_toBottomOf="@+id/editTextUseGoal"
+            app:layout_constraintStart_toEndOf="@+id/editTextUseGoal"
+            app:layout_constraintTop_toTopOf="@+id/editTextUseGoal"
+            tools:ignore="MissingConstraints" />
+
+        <EditText
+            android:id="@+id/editTextUseGoal"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="19dp"
+            android:layout_weight="1"
+            android:text="123"
+            android:textSize="13dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView18"
+            app:layout_constraintStart_toEndOf="@+id/textView18"
+            app:layout_constraintTop_toTopOf="@+id/textView18"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/textView19"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10px"
+            android:text="Detail Setting"
+            android:textColor="#317DAE"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView18"
+            tools:ignore="MissingConstraints" />
+
+        <!--android:button="@android:color/transparent"
+        android:background="@drawable/custom_checkbox"-->
+        <CheckBox
+            android:id="@+id/checkBox1"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="19dp"
+            android:checked="true"
+            android:text="Greater than 50%"
+            app:layout_constraintBottom_toBottomOf="@+id/textView19"
+            app:layout_constraintStart_toEndOf="@+id/textView19"
+            app:layout_constraintTop_toTopOf="@+id/textView19"
+            tools:ignore="MissingConstraints" />
+
+        <CheckBox
+            android:id="@+id/checkBox2"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:checked="false"
+            android:text="Greater than 80%"
+            app:layout_constraintStart_toStartOf="@+id/checkBox1"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox1" />
+
+        <CheckBox
+            android:id="@+id/checkBox3"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:checked="false"
+            android:text="Greater than 90%"
+            app:layout_constraintStart_toStartOf="@+id/checkBox2"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
+
+        <CheckBox
+            android:id="@+id/checkBox4"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:checked="false"
+            android:text="Greater than 100%"
+            app:layout_constraintStart_toStartOf="@+id/checkBox3"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
+
         <com.github.angads25.toggle.widget.LabeledSwitch
             android:id="@+id/toogleUseGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50px"
+            android:layout_marginTop="10dp"
             app:layout_constraintStart_toEndOf="@+id/textView12"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
             app:textOff="No"
             app:textOn="Yes"
             tools:ignore="MissingConstraints" />
+
+        <com.github.angads25.toggle.widget.LabeledSwitch
+            android:id="@+id/toogleUseGoal2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="19dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toEndOf="@+id/textView17"
+            app:layout_constraintTop_toBottomOf="@+id/toogleUseGoal"
+            app:textOff="No"
+            app:textOn="Yes"
+            tools:ignore="MissingConstraints" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -168,7 +286,7 @@
 
         <TextView
             android:id="@+id/textView13"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:padding="10px"
             android:text="Notification"
@@ -178,12 +296,33 @@
             app:layout_constraintTop_toTopOf="@+id/toogleProgressive"
             tools:ignore="MissingConstraints" />
 
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10px"
+            android:text="Step"
+            android:textColor="#317DAE"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView13"
+            tools:ignore="MissingConstraints" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="200dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="19dp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView21"
+            app:layout_constraintStart_toEndOf="@+id/textView21"
+            app:layout_constraintTop_toTopOf="@+id/textView21" />
+
         <com.github.angads25.toggle.widget.LabeledSwitch
             android:id="@+id/toogleProgressive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50px"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="10dp"
             app:layout_constraintStart_toEndOf="@+id/textView13"
             app:layout_constraintTop_toBottomOf="@+id/textView3"
             app:textOff="No"

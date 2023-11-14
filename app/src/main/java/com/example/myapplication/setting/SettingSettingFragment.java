@@ -1,9 +1,15 @@
 package com.example.myapplication.setting;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.Spinner;
 
 import androidx.fragment.app.Fragment;
 
@@ -11,6 +17,8 @@ import com.example.myapplication.R;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.github.angads25.toggle.model.ToggleableView;
 import com.github.angads25.toggle.widget.LabeledSwitch;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +67,9 @@ public class SettingSettingFragment extends Fragment {
         }
     }
     LabeledSwitch toggle1;
+    CheckBox checkBox1,checkBox2,checkBox3,checkBox4;
+    ArrayList<CheckBox> checkBoxes = new ArrayList<CheckBox>();
+    Spinner spinner;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,6 +85,53 @@ public class SettingSettingFragment extends Fragment {
                 }
             }
         });
+
+        checkBox1 = v.findViewById(R.id.checkBox1);
+        checkBox2 = v.findViewById(R.id.checkBox2);
+        checkBox3 = v.findViewById(R.id.checkBox3);
+        checkBox4 = v.findViewById(R.id.checkBox4);
+        checkBoxes.add(checkBox1);checkBoxes.add(checkBox2);checkBoxes.add(checkBox3);checkBoxes.add(checkBox4);
+
+        for(int i=0;i<checkBoxes.size();i++)
+        {
+            checkBoxes.get(i).setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View view) {
+                    if(((CheckBox) view).isChecked())
+                    {
+                        for(int i=0;i<checkBoxes.size();i++)
+                        {
+                            if(checkBoxes.get(i) != view)
+                            {
+                                checkBoxes.get(i).setChecked(false);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        String[] str = getResources().getStringArray(R.array.step);
+        spinner = v.findViewById(R.id.spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,str);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), str);
+        //adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(2);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(spinner.getSelectedItemPosition() > 0){
+                    //선택된 항목
+                    Log.v("알림",spinner.getSelectedItem().toString()+ "is selected");
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
 
         return v;
     }

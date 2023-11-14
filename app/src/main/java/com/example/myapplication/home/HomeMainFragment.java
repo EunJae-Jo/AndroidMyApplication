@@ -117,11 +117,12 @@ public class HomeMainFragment extends Fragment {
 
         ArrayList<PieEntry> entries1 = new ArrayList<>();
 
-        for(int i = 0; i < count; i++) {
-            entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Quarter " + (i+1)));
-        }
+        entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Morning"));
+        entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Afternoon"));
+        entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Evening"));
+        entries1.add(new PieEntry((float) ((Math.random() * 60) + 40), "Midnight"));
 
-        PieDataSet ds1 = new PieDataSet(entries1, "Quarterly Revenues 2015");
+        PieDataSet ds1 = new PieDataSet(entries1, "");
         ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
         ds1.setSliceSpace(2f);
         ds1.setValueTextColor(Color.WHITE);
