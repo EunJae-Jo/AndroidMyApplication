@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.util.concurrent.ExecutionException;
+
 public class MainActivity extends AppCompatActivity {
     TextView sign;
     androidx.appcompat.widget.AppCompatButton loginbutton;
@@ -26,8 +28,20 @@ public class MainActivity extends AppCompatActivity {
         //로그인 버튼
         loginbutton = findViewById(R.id.loginbutton);
         loginbutton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainPage.class);
-            startActivity(intent);
+
+            String resultText = "";
+
+            try {
+                resultText = new Task().execute().get();
+                System.out.println(resultText);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            //Intent intent = new Intent(this, MainPage.class);
+            //startActivity(intent);
         });
 
 
