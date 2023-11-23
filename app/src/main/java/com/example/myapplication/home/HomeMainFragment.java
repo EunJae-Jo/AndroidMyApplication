@@ -4,19 +4,27 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.MainPage;
 import com.example.myapplication.R;
+import com.example.myapplication.helper.HttpHelper;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 
@@ -67,9 +75,50 @@ public class HomeMainFragment extends Fragment {
         }
     }
 
+    public void suTest(){
+
+        // 데이터 테스트
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JsonObject result = HttpHelper.getInstance().get("/api/admin/meters");
+                if(result != null) {
+                    JsonArray t;
+                    try {
+                        t = result.get("data").getAsJsonArray();
+
+                        //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
+                        JsonObject tempJson = new JsonObject();
+                        for (int i = 0; i < t.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
+                            tempJson = (JsonObject) t.get(i);
+                            Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
+                        }
+                        toast("Get Test 완료");
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+
+        });
+
+        th.start();
+
+    }
+
+    private void toast(String message) {
+        FragmentActivity activity = getActivity();
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        suTest();
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_main, container, false);
         PieChart pieChart = v.findViewById(R.id.pieChart1);
