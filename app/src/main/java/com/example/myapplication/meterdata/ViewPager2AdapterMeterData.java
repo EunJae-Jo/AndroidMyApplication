@@ -14,11 +14,11 @@ public class ViewPager2AdapterMeterData extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
+           // case 0:
+           //     return new MeterDataDayFragment();
             case 0:
-                return new MeterDataDayFragment();
-            case 1:
                 return new MeterDataWeekFragment();
-            case 2:
+            case 1:
                 return new MeterDataMonthFragment();
             default:
                 return null;
@@ -26,6 +26,6 @@ public class ViewPager2AdapterMeterData extends FragmentStateAdapter {
     }
     @Override
     public int getItemCount() {
-        return 3;       // 페이지 수
+        return 2;       // 페이지 수
     }
 }
