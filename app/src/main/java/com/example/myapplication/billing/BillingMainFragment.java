@@ -82,10 +82,8 @@ public class BillingMainFragment extends Fragment {
                 if(position == 0)
                 {
                     tab.setText("Realtime Billing");
-                } else if (position == 1) {
-                    tab.setText("Monthly Bill");
                 } else {
-                    tab.setText("Neighbor comparing");
+                    tab.setText("Monthly Bill");
                 }
             }
         }).attach();

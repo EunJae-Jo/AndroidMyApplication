@@ -81,7 +81,7 @@ public class HomeMainFragment extends Fragment {
         Thread th = new Thread(new Runnable() {
             @Override
             public void run() {
-                JsonObject result = HttpHelper.getInstance().get("/api/admin/meters");
+                JsonObject result = HttpHelper.getInstance().get("/api/meter/list");//("/api/admin/meters");
                 if(result != null) {
                     JsonArray t;
                     try {

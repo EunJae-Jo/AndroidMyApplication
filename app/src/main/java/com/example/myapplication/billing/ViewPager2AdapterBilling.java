@@ -22,14 +22,12 @@ public class ViewPager2AdapterBilling extends FragmentStateAdapter {
                 return new BillingRealtimeFragment();
             case 1:
                 return new BillingMonthlyFragment();
-            case 2:
-                return new BillingNeighborFragment();
             default:
                 return null;
         }
     }
     @Override
     public int getItemCount() {
-        return 3;       // 페이지 수
+        return 2;       // 페이지 수
     }
 }
