@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +47,8 @@ public class BillingMonthlyFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private BillingService mBillingService;
 
     public BillingMonthlyFragment() {
         // Required empty public constructor
@@ -76,12 +80,28 @@ public class BillingMonthlyFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+    @Override
+    public void onPause() {
+        super.onPause();
+        //Fragment 가려질 때 처리
+        Log.d("Su-Test", "onPause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Fragment 보여질 때 처리
+        Log.d("Su-Test", "onResume");
+
+        getBillingMonthFromHttp();
+    }
 
     BarChart barChart;
     ExpandableListView listView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mBillingService = new BillingService(getActivity());
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_billing_monthly, container, false);
 
@@ -172,4 +192,18 @@ public class BillingMonthlyFragment extends Fragment {
         }
         return  dataVals;
     }
+
+
+
+    public void getBillingMonthFromHttp(){
+        mBillingService.getBillingMonthFromHttp("2023", "3", (jsonArray)-> {
+            //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
+            JsonObject tempJson = new JsonObject();
+            for (int i = 0; i < jsonArray.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
+                tempJson = (JsonObject) jsonArray.get(i);
+                Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
+            }
+        });
+    }
+
 }

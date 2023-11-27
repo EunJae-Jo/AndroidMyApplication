@@ -59,6 +59,9 @@ public class BillingRealtimeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+
+    BillingService mBillingService ;
+
     public BillingRealtimeFragment() {
         // Required empty public constructor
     }
@@ -117,6 +120,7 @@ public class BillingRealtimeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mBillingService = new BillingService(getActivity());
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_billing_realtime, container, false);
 
@@ -194,36 +198,14 @@ public class BillingRealtimeFragment extends Fragment {
     }
 
     public void getBillingMonthFromHttp(){
-
-        Thread th = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Map<String, String> map = new HashMap<>();
-                map.put("year", "2023");
-                map.put("month", "3");
-                JsonObject result = HttpHelper.getInstance().post("/api/meter/fetch/month", map);
-                if(result != null) {
-                    JsonArray t;
-                    try {
-                        t = result.get("data").getAsJsonArray();
-
-                        //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
-                        JsonObject tempJson = new JsonObject();
-                        for (int i = 0; i < t.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
-                            tempJson = (JsonObject) t.get(i);
-                            Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
-                        }
-                        toast("/api/meter/fetch/month 완료");
-                    } catch (Exception e) {
-
-                    }
-                }
+        mBillingService.getBillingMonthFromHttp("2023", "3", (jsonArray)-> {
+            //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
+            JsonObject tempJson = new JsonObject();
+            for (int i = 0; i < jsonArray.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
+                tempJson = (JsonObject) jsonArray.get(i);
+                Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
             }
-
         });
-
-        th.start();
-
     }
 
 
