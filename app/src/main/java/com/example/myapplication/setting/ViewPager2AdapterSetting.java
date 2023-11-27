@@ -20,13 +20,13 @@ public class ViewPager2AdapterSetting extends FragmentStateAdapter {
         switch (position) {
             case 0:
                 return new SettingNoticeFragment();
+            //case 1:
+            //    return new SettingUseGoalFragment();
+            //case 2:
+            //    return new SettingProgressiveFragment();
+            //case 3:
+            //    return new SettingCustomerFragment();
             case 1:
-                return new SettingUseGoalFragment();
-            case 2:
-                return new SettingProgressiveFragment();
-            case 3:
-                return new SettingCustomerFragment();
-            case 4:
                 return new SettingSettingFragment();
             default:
                 return null;
@@ -34,6 +34,6 @@ public class ViewPager2AdapterSetting extends FragmentStateAdapter {
     }
     @Override
     public int getItemCount() {
-        return 5;       // 페이지 수
+        return 2;       // 페이지 수
     }
 }

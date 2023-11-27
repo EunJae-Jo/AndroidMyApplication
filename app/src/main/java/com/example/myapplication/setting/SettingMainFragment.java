@@ -81,13 +81,7 @@ public class SettingMainFragment extends Fragment {
                 if(position == 0)
                 {
                     tab.setText("NOTICE");
-                } else if (position == 1) {
-                    tab.setText("Use Goal Notification");
-                } else if (position == 2) {
-                    tab.setText("PROGRESSIVE");
-                } else if (position == 3) {
-                    tab.setText("CUSTOMER MANAGEMENT");
-                } else {
+                }  else {
                     tab.setText("SETTING");
                 }
             }
