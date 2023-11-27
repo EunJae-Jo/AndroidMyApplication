@@ -19,25 +19,6 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/header_title1"
-                android:text="Month"
-                android:textColor="#045CB1"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:id="@+id/header_title2"
-                android:text="Step"
-                android:textColor="#045CB1"
-                android:textSize="18sp"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-
-            <TextView
                 android:id="@+id/header_title3"
                 android:text="Usage(kWh)"
                 android:textColor="#045CB1"

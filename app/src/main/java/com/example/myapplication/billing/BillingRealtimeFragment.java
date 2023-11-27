@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.helper.HttpHelper;
 import com.github.mikephil.charting.charts.PieChart;
@@ -38,6 +39,8 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -61,6 +64,8 @@ public class BillingRealtimeFragment extends Fragment {
 
 
     BillingService mBillingService ;
+
+    LinearLayout mLinearLayoutV;
 
     public BillingRealtimeFragment() {
         // Required empty public constructor
@@ -140,6 +145,8 @@ public class BillingRealtimeFragment extends Fragment {
         //pieChart.setCenterText("Reward Points: 150");//new line
 
         LinearLayout linearLayoutV = (LinearLayout) v.findViewById(R.id.linearLayoutV);
+        mLinearLayoutV = linearLayoutV;
+
         for(int i=0;i<4;i++)
         {
             LinearLayout linearLayoutH = new LinearLayout(this.getContext());
@@ -152,7 +159,6 @@ public class BillingRealtimeFragment extends Fragment {
             linearLayoutH.addView(value);
             linearLayoutV.addView(linearLayoutH);
         }
-
         return v;
     }
 
@@ -198,13 +204,35 @@ public class BillingRealtimeFragment extends Fragment {
     }
 
     public void getBillingMonthFromHttp(){
-        mBillingService.getBillingMonthFromHttp("2023", "3", (jsonArray)-> {
-            //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
-            JsonObject tempJson = new JsonObject();
-            for (int i = 0; i < jsonArray.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
-                tempJson = (JsonObject) jsonArray.get(i);
-                Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
-            }
+        mBillingService.getMonthDatasThisYearFromHttp((hashMap)-> {
+
+            Map<String, HashMap<String, BigDecimal>> map = hashMap;
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    mLinearLayoutV.removeAllViews();
+
+                    for( Map.Entry<String, HashMap<String, BigDecimal>> entry : map.entrySet() ){
+                        String strKey = entry.getKey();
+                        HashMap<String, BigDecimal> values = entry.getValue();
+
+                        LinearLayout linearLayoutH = new LinearLayout(getContext());
+                        TextView month = new TextView(linearLayoutH.getContext());
+                        month.setText(strKey+"\t\t\t");
+
+                        TextView value = new TextView(linearLayoutH.getContext());
+                        DecimalFormat fomat = new DecimalFormat("###,###");
+                        value.setText(String.format( "%15s 원" , fomat.format(values.get("thisMonthcost"))));
+                        //value.setText(String.format("%.2f", values.get("thisMonthcost")));
+                        linearLayoutH.addView(month);
+                        linearLayoutH.addView(value);
+
+                        mLinearLayoutV.addView(linearLayoutH);
+                    }
+
+                }
+            });
+
+
         });
     }
 

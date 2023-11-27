@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -28,9 +29,13 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.gson.JsonObject;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -196,13 +201,70 @@ public class BillingMonthlyFragment extends Fragment {
 
 
     public void getBillingMonthFromHttp(){
-        mBillingService.getBillingMonthFromHttp("2023", "3", (jsonArray)-> {
+        mBillingService.getDayDatasThisWeekFromHttp((result)-> {
             //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
-            JsonObject tempJson = new JsonObject();
-            for (int i = 0; i < jsonArray.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
-                tempJson = (JsonObject) jsonArray.get(i);
-                Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
-            }
+            Map<String, HashMap<String, BigDecimal>> map = result;
+
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+
+                    // --------------------------------------
+                    // Text Update
+                    ArrayList<BillingDataGroup> dataList = new ArrayList<BillingDataGroup>();
+                    for( Map.Entry<String, HashMap<String, BigDecimal>> entry : map.entrySet() ){
+                        String strKey = entry.getKey();
+                        HashMap<String, BigDecimal> values = entry.getValue();
+                        String[] tmp = {String.format("%s,%s", values.get("kwh").setScale(1, BigDecimal.ROUND_HALF_UP), values.get("cost").setScale(1, BigDecimal.ROUND_HALF_UP))};
+                        BillingDataGroup temp = new BillingDataGroup(strKey);
+                        //String[] tmp = {"a,b","e,f","i,j"};
+
+                        temp.data = tmp;
+                        dataList.add(temp);
+                    }
+
+                    String[] date = map.keySet().toArray(new String[map.size()]);
+                    TableLayout[] tableLayout = new TableLayout[date.length];
+
+                    ExpandAdapter adapter = new ExpandAdapter(getActivity().getApplicationContext(),R.layout.billing_monthly_parent,R.layout.billing_monthly_child,dataList,tableLayout);
+                    //listView.setIndicatorBounds(width-50, width); //이 코드를 지우면 화살표 위치가 바뀐다.
+                    listView.setAdapter(adapter);
+
+                    // --------------------------------------
+                    // Bar Chart Update
+                    ArrayList<BarEntry> dataVals = new ArrayList<>();
+                    int i = 0;
+                    for( Map.Entry<String, HashMap<String, BigDecimal>> entry : map.entrySet() ){
+                        String strKey = entry.getKey();
+                        HashMap<String, BigDecimal> values = entry.getValue();
+                        BigDecimal val = values.get("cost");
+                        BigDecimal val1 = val.setScale(0, BigDecimal.ROUND_HALF_UP);
+                        double val2 = val1.doubleValue();
+                        float val3 = val1.floatValue();
+                        long val4 = val1.longValue();
+
+                        dataVals.add(new BarEntry(i++, val4/1000));
+
+                    }
+
+                    BarDataSet barDataSet = new BarDataSet(dataVals,"data1");
+                    barDataSet.setColors(new int[] {Color.RED, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW});
+                    barDataSet.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            DecimalFormat fomat = new DecimalFormat("###,###");
+                            return String.valueOf(fomat.format((int)value)) + "천원";
+                        }
+                    });
+                    BarData barData = new BarData();
+                    barData.addDataSet(barDataSet);
+                    barChart.setData(barData);
+
+                    // bar chart refresh
+                    barChart.notifyDataSetChanged();
+                    barChart.invalidate();
+
+                }
+            });
         });
     }
 
