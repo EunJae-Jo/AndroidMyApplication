@@ -21,10 +21,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // id
         id = findViewById(R.id.editID);
-        id.setText("admin"); // 테스트 용..
+        id.setText("cust-10"); // 테스트 용..
         // pw
         pw = findViewById(R.id.ediPassword);
-        pw.setText("passw0rd7!"); // 테스트 용..
+        pw.setText("System123!"); // 테스트 용..
 
         //회원가입 버튼
         sign = findViewById(R.id.signin);

@@ -80,6 +80,8 @@ public class MeterDataMainFragment extends Fragment {
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 if(position == 0)
                 {
+                    tab.setText("Day");
+                } else if (position == 1) {
                     tab.setText("Week");
                 } else {
                     tab.setText("Month");
