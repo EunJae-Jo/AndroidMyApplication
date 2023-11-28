@@ -45,7 +45,7 @@ public class MeterFetchMonthData {
         }
 
         // 정렬.
-        Map<String, MeterFetchData> sortedMap = data.entrySet().stream()
+        data = data.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
