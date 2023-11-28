@@ -22,6 +22,8 @@ import com.example.myapplication.MyYearMonthPickerDialog;
 import com.example.myapplication.R;
 import com.example.myapplication.billing.BillingService;
 import com.example.myapplication.helper.HttpHelper;
+import com.example.myapplication.model.MeterFetchData;
+import com.example.myapplication.model.MeterFetchMonthData;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -149,6 +151,10 @@ public class MeterDataMonthFragment extends Fragment {
 
         initChart_down();
         makeChart_down();
+
+
+        String[] split = picker_year_month.getText().toString().split("-");
+        update(split[0], split[1]);
         return v;
     }
     DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
@@ -163,20 +169,19 @@ public class MeterDataMonthFragment extends Fragment {
         }
     };
 
-    private void updateBarChart(JsonObject dataObj){
-        BigDecimal totalCost = new BigDecimal(0);
-        Iterator<String> keys = dataObj.keySet().iterator();
+    private void updateBarChart(MeterFetchMonthData dataObj){
+        Iterator<String> keys = dataObj.data.keySet().iterator();
 
         ArrayList<BarEntry> dataVals = new ArrayList<>();
         int count = 0;
 
         while(keys.hasNext()) {
             String key = keys.next();
-            if (dataObj.get(key) instanceof JsonObject) {
+            if (dataObj.data.get(key) instanceof MeterFetchData) {
+                MeterFetchData data = dataObj.data.get(key);
                 // do something with jsonObject here
-                totalCost =  totalCost.add(dataObj.get(key).getAsJsonObject().get("cost").getAsBigDecimal());
-                BigDecimal kwh =  dataObj.get(key).getAsJsonObject().get("kwh").getAsBigDecimal().setScale(1, BigDecimal.ROUND_HALF_UP);
-                BigDecimal cost =  dataObj.get(key).getAsJsonObject().get("cost").getAsBigDecimal().setScale(1, BigDecimal.ROUND_HALF_UP);
+                BigDecimal kwh =  data.kwh.setScale(1, BigDecimal.ROUND_HALF_UP);
+                BigDecimal cost =  data.cost.setScale(1, BigDecimal.ROUND_HALF_UP);
 
                 //Log.d("Su-Test", dataObj.get(key).toString()); // 결과 가져오기.
 
@@ -198,20 +203,19 @@ public class MeterDataMonthFragment extends Fragment {
 
     }
 
-    private void updateLineChart(JsonObject dataObj){
-        Iterator<String> keys = dataObj.keySet().iterator();
+    private void updateLineChart(MeterFetchMonthData dataObj){
+        Iterator<String> keys = dataObj.data.keySet().iterator();
 
-        BigDecimal totalCost = new BigDecimal(0);
         ArrayList<Entry> kwhVals = new ArrayList<>();
         ArrayList<Entry> costVals = new ArrayList<>();
         int count = 1;
         while(keys.hasNext()) {
             String key = keys.next();
-            if (dataObj.get(key) instanceof JsonObject) {
+            if (dataObj.data.get(key) instanceof MeterFetchData) {
+                MeterFetchData data = dataObj.data.get(key);
                 // do something with jsonObject here
-                totalCost =  totalCost.add(dataObj.get(key).getAsJsonObject().get("cost").getAsBigDecimal());
-                BigDecimal kwh =  dataObj.get(key).getAsJsonObject().get("kwh").getAsBigDecimal().setScale(1, BigDecimal.ROUND_HALF_UP);
-                BigDecimal cost =  dataObj.get(key).getAsJsonObject().get("cost").getAsBigDecimal().setScale(1, BigDecimal.ROUND_HALF_UP);
+                BigDecimal kwh =  data.kwh.setScale(1, BigDecimal.ROUND_HALF_UP);
+                BigDecimal cost =  data.cost.setScale(1, BigDecimal.ROUND_HALF_UP);
 
                 //Log.d("Su-Test", dataObj.get(key).toString()); // 결과 가져오기.
 
@@ -244,65 +248,30 @@ public class MeterDataMonthFragment extends Fragment {
         lineChart.invalidate();
     }
 
-    private void updateTextView(JsonArray[] ja){
-        for(int idx = 0 ; idx < ja.length ; idx++) {
-            JsonArray t = ja[idx];
-            JsonObject tempJson = new JsonObject();
-            for (int i = 0; i < t.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
-                tempJson = (JsonObject) t.get(i);
-                if (idx == 0) {
-                    final String thisMonthTvStr =(tempJson.get("thisMonthKwh").getAsBigDecimal().divide(new BigDecimal(1000)).setScale(1, BigDecimal.ROUND_CEILING).toString());
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            today_kWh.setText(String.format("%s", thisMonthTvStr, ""));
-                            progress_today.setMax(500);
-                            progress_today.setProgress((int)(Double.parseDouble(thisMonthTvStr)));
-                        }
-                    });
-                } else { // 이전 데이터.
-                    final String prevMonthTvStr = (tempJson.get("thisMonthKwh").getAsBigDecimal().divide(new BigDecimal(1000)).setScale(1, BigDecimal.ROUND_CEILING).toString());
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            yesterday_kWh.setText(String.format("%s", prevMonthTvStr, ""));
-                            progress_yesterday.setMax(500);
-                            progress_yesterday.setProgress((int)(Double.parseDouble(prevMonthTvStr)));
-                        }
-                    });
-                }
+    private void updateTextView(MeterFetchMonthData prevData, MeterFetchMonthData thisData){
+        final String thisMonthTvStr =(thisData.thisMonthKwh.divide(new BigDecimal(1000)).setScale(1, BigDecimal.ROUND_CEILING).toString());
+        final String prevMonthTvStr = (prevData.thisMonthKwh.divide(new BigDecimal(1000)).setScale(1, BigDecimal.ROUND_CEILING).toString());
 
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                today_kWh.setText(String.format("%s", thisMonthTvStr, ""));
+                progress_today.setMax(500);
+                progress_today.setProgress((int)(Double.parseDouble(thisMonthTvStr)));
+
+                yesterday_kWh.setText(String.format("%s", prevMonthTvStr, ""));
+                progress_yesterday.setMax(500);
+                progress_yesterday.setProgress((int)(Double.parseDouble(prevMonthTvStr)));
             }
-        }
-
+        });
     }
 
     private void update(String year, String month){
-        BillingService bs = new BillingService(getActivity());
+        new MeterDataService(getActivity()).getMeterMonthsFromHttp(year, month, (prevData, thisData)-> {
+            updateBarChart(thisData);
+            updateLineChart(thisData);
 
-        bs.getMeterMonthsFromHttp(year, month, (ja)-> {
-            //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
-
-
-            for(int idx = 0 ; idx < ja.length ; idx++) {
-                JsonArray t = ja[idx];
-                JsonObject tempJson = new JsonObject();
-                for (int i = 0; i < t.size(); i++) { //배열에 있는 제이슨 수많큼 반복한다.
-                    tempJson = (JsonObject) t.get(i);
-                    Log.d("Su-Test", tempJson.toString()); // 결과 가져오기.
-
-                    JsonObject dataObj = tempJson.get("data").getAsJsonObject();
-
-                    if (idx == 0) {
-                        updateBarChart(dataObj);
-                        updateLineChart(dataObj);
-                        break;
-                    }
-                }
-            }
-
-
-            updateTextView(ja);
+            updateTextView(prevData, thisData);
         });
-
     }
 
     private String getCurrentDate()

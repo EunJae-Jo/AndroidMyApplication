@@ -1,11 +1,21 @@
 package com.example.myapplication.helper;
 
+import android.util.Log;
+
+import com.example.myapplication.model.MeterFetchDayData;
+import com.example.myapplication.model.MeterFetchMonthData;
+import com.example.myapplication.model.MeterFetchResult;
+import com.example.myapplication.model.MeterFetchWeekData;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -34,28 +44,8 @@ public class HttpHelper {
         return instance;
     }
 
-    public String login( String id, String pw){
-        Map<String, String> map = new HashMap<>();
-        map.put("user_id", id);
-        map.put("user_pw", pw);
-
-        //map.put("user_id", "admin");
-        //map.put("user_pw", "passw0rd7!");
-        JsonObject jobj = post("/api/user/login", null, map);
-        if(jobj != null) {
-            JsonObject t;
-            try {
-                t = jobj.get("data").getAsJsonObject();
-                this.id = id;
-                this.pw = pw;
-                return t.get("token").toString().replace("\"","");
-            } catch (Exception e) {
-
-            }
-        }
-        return null;
-    }
-
+    //==========================================
+    // 기본.
     public JsonObject post(String suffixUrl, Map<String, String> params){
 
         if( id == null && pw == null)
@@ -149,6 +139,119 @@ public class HttpHelper {
 
         return result;
     }
+
+    //==========================================
+    // 기능
+
+    public String login( String id, String pw){
+        Map<String, String> map = new HashMap<>();
+        map.put("user_id", id);
+        map.put("user_pw", pw);
+
+        //map.put("user_id", "admin");
+        //map.put("user_pw", "passw0rd7!");
+        JsonObject jobj = post("/api/user/login", null, map);
+        if(jobj != null) {
+            JsonObject t;
+            try {
+                t = jobj.get("data").getAsJsonObject();
+                this.id = id;
+                this.pw = pw;
+                return t.get("token").toString().replace("\"","");
+            } catch (Exception e) {
+
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     *  TODO : 구현해야합니다.
+     * @param date  "2023-11-01"
+     * @param func  반환함수.
+     */
+    public void getMeterFetchDay(String date, Consumer<MeterFetchDayData> func){
+        final String suffixUrl = "/api/meter/fetch/week";
+
+        Map<String, String> map = new HashMap<>();
+        map.put("date", date);
+
+        JsonObject result = post(suffixUrl, map);
+        if(result != null) {
+            JsonArray t;
+            try {
+                t = result.get("data").getAsJsonArray();
+                MeterFetchResult rr = new MeterFetchResult(result);
+                MeterFetchDayData day = new MeterFetchDayData(result.get("data").getAsJsonArray());
+
+                if (func != null)
+                    func.accept(day);
+
+            } catch (Exception e) {
+                Log.d("su-test", e.getMessage());
+            }
+        }
+    }
+
+    /**
+     *
+     * @param startDate "2023-11-01"
+     * @param endDate   "2023-11-01"
+     * @param func      반환 함수
+     */
+    public void getMeterFetchWeek(String startDate, String endDate, BiConsumer<MeterFetchResult, MeterFetchWeekData> func){
+        final String suffixUrl = "/api/meter/fetch/week";
+
+        Map<String, String> map = new HashMap<>();
+        map.put("startDate", startDate);
+        map.put("endDate", endDate);
+
+        JsonObject result = post(suffixUrl, map);
+        if(result != null) {
+            JsonArray t;
+            try {
+                t = result.get("data").getAsJsonArray();
+                MeterFetchResult rr = new MeterFetchResult(result);
+                MeterFetchWeekData week = new MeterFetchWeekData(result.get("data").getAsJsonArray());
+
+                if (func != null)
+                    func.accept(rr, week);
+
+            } catch (Exception e) {
+                Log.d("su-test", e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param year      "2023"
+     * @param month     "3"
+     * @param func      반환함수
+     */
+    public void getMeterFetchMonth(String year, String month, BiConsumer<MeterFetchResult, MeterFetchMonthData> func){
+        final String suffixUrl = "/api/meter/fetch/month";
+        Map<String, String> map = new HashMap<>();
+        map.put("year", year);
+        map.put("month", month);
+
+        JsonObject result = HttpHelper.getInstance().post(suffixUrl, map);
+        if (result != null) {
+            JsonArray t;
+            try {
+                t = result.get("data").getAsJsonArray();
+                MeterFetchResult rr = new MeterFetchResult(result);
+                MeterFetchMonthData monthData = new MeterFetchMonthData(result.get("data").getAsJsonArray());
+
+                if (func != null)
+                    func.accept(rr, monthData);
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
 
 
 }

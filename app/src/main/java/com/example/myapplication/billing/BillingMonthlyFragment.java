@@ -19,6 +19,9 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.R;
+import com.example.myapplication.model.MeterFetchData;
+import com.example.myapplication.model.MeterFetchResult;
+import com.example.myapplication.model.MeterFetchWeekData;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -53,6 +56,8 @@ public class BillingMonthlyFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    BarChart mBarChart;
+    ExpandableListView mListView;
     private BillingService mBillingService;
 
     public BillingMonthlyFragment() {
@@ -101,8 +106,6 @@ public class BillingMonthlyFragment extends Fragment {
         getBillingMonthFromHttp();
     }
 
-    BarChart barChart;
-    ExpandableListView listView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -110,15 +113,15 @@ public class BillingMonthlyFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_billing_monthly, container, false);
 
-        barChart = v.findViewById(R.id.barChart);
-        barChart.getLegend().setEnabled(false);// Legend는 차트의 범례
-        barChart.getDescription().setEnabled(false);// chart 밑에 description 표시 유무
-        barChart.setTouchEnabled(false); // 터치 유무
+        mBarChart = v.findViewById(R.id.barChart);
+        mBarChart.getLegend().setEnabled(false);// Legend는 차트의 범례
+        mBarChart.getDescription().setEnabled(false);// chart 밑에 description 표시 유무
+        mBarChart.setTouchEnabled(false); // 터치 유무
 
         String[] date = {"2018년","2019년","2020년","2021년","2022년","2023년"};
         TableLayout[] tableLayout = new TableLayout[date.length];
         ArrayList<BillingDataGroup> dataList = new ArrayList<BillingDataGroup>();
-        listView = (ExpandableListView)v.findViewById(R.id.expandableListView);
+        mListView = (ExpandableListView)v.findViewById(R.id.expandableListView);
         for(int i=0;i<date.length;i++)
         {
             BillingDataGroup temp = new BillingDataGroup(date[i]);
@@ -141,7 +144,7 @@ public class BillingMonthlyFragment extends Fragment {
 
         ExpandAdapter adapter = new ExpandAdapter(getActivity().getApplicationContext(),R.layout.billing_monthly_parent,R.layout.billing_monthly_child,dataList,tableLayout);
         //listView.setIndicatorBounds(width-50, width); //이 코드를 지우면 화살표 위치가 바뀐다.
-        listView.setAdapter(adapter);
+        mListView.setAdapter(adapter);
 
         initChart();
         makeChart();
@@ -164,14 +167,14 @@ public class BillingMonthlyFragment extends Fragment {
     }
     private void initChart(){
         ArrayList<String> xAxisVals = new ArrayList<String>(Arrays.asList("Sun","Mon","Tue","Wed","Thu","Fri","Sat"));
-        XAxis xAxis = barChart.getXAxis();
+        XAxis xAxis = mBarChart.getXAxis();
         xAxis.setDrawAxisLine(false);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisVals));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        YAxis axisLeft = barChart.getAxisLeft();
+        YAxis axisLeft = mBarChart.getAxisLeft();
         axisLeft.setDrawGridLines(false);
         axisLeft.setDrawAxisLine(false);
-        YAxis axisRight = barChart.getAxisRight();
+        YAxis axisRight = mBarChart.getAxisRight();
         axisRight.setDrawLabels(false); // label 삭제
         axisRight.setDrawGridLines(false);
         axisRight.setDrawAxisLine(false);
@@ -187,7 +190,7 @@ public class BillingMonthlyFragment extends Fragment {
         });
         BarData barData = new BarData();
         barData.addDataSet(barDataSet);
-        barChart.setData(barData);
+        mBarChart.setData(barData);
     }
     private ArrayList<BarEntry> dataValue(){
         ArrayList<BarEntry> dataVals = new ArrayList<>();
@@ -201,9 +204,17 @@ public class BillingMonthlyFragment extends Fragment {
 
 
     public void getBillingMonthFromHttp(){
-        mBillingService.getDayDatasThisWeekFromHttp((result)-> {
+
+        // TODO 테스트 끝나면 바꿀것.
+        //mBillingService.getDayDatasThisWeekFromHttp((resultClass, dataClass)-> {
+        mBillingService.getDayDatasThisWeekFromHttp("2023-11-06", "2023-11-12", (resultClass, dataClass)-> {
+            MeterFetchResult result = resultClass;
+            MeterFetchWeekData data = dataClass;
+            if( data == null || data.data.size() == 0 )
+                return;
+
             //배열에 있는 제이슨 객체를 받을 임시 제이슨 객체
-            Map<String, HashMap<String, BigDecimal>> map = result;
+            Map<String, MeterFetchData> map = data.data;
 
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
@@ -211,10 +222,10 @@ public class BillingMonthlyFragment extends Fragment {
                     // --------------------------------------
                     // Text Update
                     ArrayList<BillingDataGroup> dataList = new ArrayList<BillingDataGroup>();
-                    for( Map.Entry<String, HashMap<String, BigDecimal>> entry : map.entrySet() ){
+                    for( Map.Entry<String, MeterFetchData> entry : map.entrySet() ){
                         String strKey = entry.getKey();
-                        HashMap<String, BigDecimal> values = entry.getValue();
-                        String[] tmp = {String.format("%s,%s", values.get("kwh").setScale(1, BigDecimal.ROUND_HALF_UP), values.get("cost").setScale(1, BigDecimal.ROUND_HALF_UP))};
+                        MeterFetchData value = entry.getValue();
+                        String[] tmp = {String.format("%s,%s", value.kwh.setScale(1, BigDecimal.ROUND_HALF_UP), value.cost.setScale(1, BigDecimal.ROUND_HALF_UP))};
                         BillingDataGroup temp = new BillingDataGroup(strKey);
                         //String[] tmp = {"a,b","e,f","i,j"};
 
@@ -227,22 +238,18 @@ public class BillingMonthlyFragment extends Fragment {
 
                     ExpandAdapter adapter = new ExpandAdapter(getActivity().getApplicationContext(),R.layout.billing_monthly_parent,R.layout.billing_monthly_child,dataList,tableLayout);
                     //listView.setIndicatorBounds(width-50, width); //이 코드를 지우면 화살표 위치가 바뀐다.
-                    listView.setAdapter(adapter);
+                    mListView.setAdapter(adapter);
 
                     // --------------------------------------
                     // Bar Chart Update
                     ArrayList<BarEntry> dataVals = new ArrayList<>();
                     int i = 0;
-                    for( Map.Entry<String, HashMap<String, BigDecimal>> entry : map.entrySet() ){
+                    for( Map.Entry<String, MeterFetchData> entry : map.entrySet() ){
                         String strKey = entry.getKey();
-                        HashMap<String, BigDecimal> values = entry.getValue();
-                        BigDecimal val = values.get("cost");
-                        BigDecimal val1 = val.setScale(0, BigDecimal.ROUND_HALF_UP);
-                        double val2 = val1.doubleValue();
-                        float val3 = val1.floatValue();
-                        long val4 = val1.longValue();
+                        MeterFetchData value = entry.getValue();
+                        final long val = value.cost.setScale(0, BigDecimal.ROUND_HALF_UP).longValue()/1000;
 
-                        dataVals.add(new BarEntry(i++, val4/1000));
+                        dataVals.add(new BarEntry(i++, val));
 
                     }
 
@@ -257,11 +264,11 @@ public class BillingMonthlyFragment extends Fragment {
                     });
                     BarData barData = new BarData();
                     barData.addDataSet(barDataSet);
-                    barChart.setData(barData);
+                    mBarChart.setData(barData);
 
                     // bar chart refresh
-                    barChart.notifyDataSetChanged();
-                    barChart.invalidate();
+                    mBarChart.notifyDataSetChanged();
+                    mBarChart.invalidate();
 
                 }
             });
