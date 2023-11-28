@@ -170,6 +170,7 @@ public class HttpHelper {
      *  TODO : 구현해야합니다.
      * @param date  "2023-11-01"
      * @param func  반환함수.
+     *                  https://hbase.tistory.com/78
      */
     public void getMeterFetchDay(String date, Consumer<MeterFetchDayData> func){
         final String suffixUrl = "/api/meter/fetch/week";

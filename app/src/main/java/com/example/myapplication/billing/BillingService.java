@@ -38,46 +38,8 @@ public class BillingService {
     }
 
     /**
-     * @param year
-     * @param month
-     * @param func      반환 값.
-     *                   https://hbase.tistory.com/78 참고
-     */
-    public void getBillingMonthFromHttp(String year, String month, Consumer<JsonArray> func){
-        String suffixUrl = "/api/meter/fetch/month";
-
-        Thread th = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Map<String, String> map = new HashMap<>();
-                map.put("year", year);
-                map.put("month", month);
-                JsonObject result = HttpHelper.getInstance().post(suffixUrl, map);
-                if(result != null) {
-                    JsonArray t;
-                    try {
-                        t = result.get("data").getAsJsonArray();
-
-                        func.accept(t);
-
-                        toast("/api/meter/fetch/month 완료");
-                    } catch (Exception e) {
-
-                    }
-                }
-            }
-
-        });
-
-        th.start();
-
-    }
-
-
-
-    /**
      * BillingMonthlyFragment 사용
-     *
+     * 오늘을 기준으로 이번주
      * @param func
      */
     public void getDayDatasThisWeekFromHttp(BiConsumer<MeterFetchResult, MeterFetchWeekData> func){
@@ -118,6 +80,8 @@ public class BillingService {
 
     /**
      * BillingRealtimeFragment 사용.
+     *
+     * 결과 값.
      * {
      *     {
      *          key     : "2023-01"
@@ -136,7 +100,6 @@ public class BillingService {
      * @param func 결과.
      */
     public void getMonthDatasThisYearFromHttp(Consumer<Map<String, HashMap<String, BigDecimal>>> func){
-        String suffixUrl = "/api/meter/fetch/month";
 
         Thread th = new Thread(new Runnable() {
             @Override
@@ -200,7 +163,7 @@ public class BillingService {
      * @param dateStr
      * @return
      */
-    public  String[] getDaysOfWeek() {
+    private  String[] getDaysOfWeek() {
         String[] arrYMD = new String[7];
 
         Calendar cal = Calendar.getInstance();

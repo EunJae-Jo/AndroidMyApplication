@@ -30,8 +30,6 @@ public class MeterDataService {
      *                   https://hbase.tistory.com/78 참고
      */
     public void getMeterMonthsFromHttp(String year, String month, BiConsumer<MeterFetchMonthData, MeterFetchMonthData> func){
-        String suffixUrl = "/api/meter/fetch/month";
-
         Thread th = new Thread(new Runnable() {
             @Override
             public void run() {
