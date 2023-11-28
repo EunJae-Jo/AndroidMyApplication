@@ -31,7 +31,6 @@ public class BillingService {
         //HttpHelper.getInstance();
     }
 
-
     /**
      * @param year
      * @param month
@@ -69,6 +68,70 @@ public class BillingService {
     }
 
     /**
+     * @param year
+     * @param month
+     * @param func      반환 값.
+     *                   https://hbase.tistory.com/78 참고
+     */
+    public void getMeterMonthsFromHttp(String year, String month, Consumer<JsonArray[]> func){
+        String suffixUrl = "/api/meter/fetch/month";
+
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JsonArray[] funcArgs = new JsonArray[2];
+                Map<String, String> map = new HashMap<>();
+                map.put("year", year);
+                map.put("month", month);
+                JsonObject result = HttpHelper.getInstance().post(suffixUrl, map);
+                if(result != null) {
+                    JsonArray t;
+                    try {
+                        funcArgs[0] = result.get("data").getAsJsonArray();
+
+                        //func.accept(t);
+
+                        toast("/api/meter/fetch/month 완료");
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                Map<String, String> map2 = new HashMap<>();
+                if(Integer.parseInt(month) -1 < 1) {
+                    map2.put("year", (Integer.parseInt(year)-1) + "" );
+                    map2.put("month", "12");
+                }else{
+                    map2.put("year", year );
+                    map2.put("month", (Integer.parseInt(month)-1) + "" );
+                }
+                JsonObject result2 = HttpHelper.getInstance().post(suffixUrl, map2);
+                if(result2 != null) {
+                    JsonArray t;
+                    try {
+                        funcArgs[1] = result2.get("data").getAsJsonArray();
+
+                        //func.accept(t);
+
+                        toast("/api/meter/fetch/month 완료");
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                func.accept(funcArgs);
+
+
+
+            }
+
+        });
+
+        th.start();
+
+    }
+
+    /**
      * BillingMonthlyFragment 사용
      * 
      * @param func
@@ -88,11 +151,31 @@ public class BillingService {
                 String start = days[0];
                 String end = days[days.length-1];
 
+                getDayDatasThisWeekFromHttp(start, end, func);
+            }
+
+        });
+
+        th.start();
+
+    }
+
+
+    public void getDayDatasThisWeekFromHttp(String startDate, String endDate, Consumer<Map<String, HashMap<String, BigDecimal>>> func){
+        String suffixUrl = "/api/meter/fetch/week";
+
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HashMap<String, HashMap<String, BigDecimal>> resultData = new HashMap<>();
+
+
+
                 Map<String, String> map = new HashMap<>();
                 //map.put("startDate", start);
                 //map.put("endDate", end);
-                map.put("startDate", "2023-11-06");
-                map.put("endDate", "2023-11-12");
+                map.put("startDate", startDate);
+                map.put("endDate", endDate);
                 JsonObject result = HttpHelper.getInstance().post(suffixUrl, map);
                 if(result != null) {
                     JsonArray t;
