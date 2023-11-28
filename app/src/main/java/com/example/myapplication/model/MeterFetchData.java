@@ -25,22 +25,32 @@ public class MeterFetchData {
     public BigDecimal kwh;
 
     public MeterFetchData(JsonObject obj){
-        cost = obj.get("cost").getAsBigDecimal();
-        ampareA = obj.get("ampareA").getAsBigDecimal();
-        ampareB = obj.get("ampareB").getAsBigDecimal();
-        ampareC = obj.get("ampareC").getAsBigDecimal();
-        reactiveP = obj.get("reactiveP").getAsBigDecimal();
-        ampare = obj.get("ampare").getAsBigDecimal();
-        pfA = obj.get("pfA").getAsBigDecimal();
-        activeP = obj.get("activeP").getAsBigDecimal();
-        voltageThd = obj.get("voltageThd").getAsBigDecimal();
-        pfC = obj.get("pfC").getAsBigDecimal();
-        voltage = obj.get("voltage").getAsBigDecimal();
-        hz = obj.get("hz").getAsBigDecimal();
-        pf = obj.get("pf").getAsBigDecimal();
-        voltageA = obj.get("voltageA").getAsBigDecimal();
-        voltageB = obj.get("voltageB").getAsBigDecimal();
-        voltageC = obj.get("voltageC").getAsBigDecimal();
-        kwh = obj.get("kwh").getAsBigDecimal();
+        cost = getData(obj,"cost");
+        ampareA = getData(obj,"ampareA");
+        ampareB = getData(obj, "ampareB");
+        ampareC = getData(obj, "ampareC");
+        reactiveP = getData(obj, "reactiveP");
+        ampare = getData(obj, "ampare");
+        pfA = getData(obj, "pfA");
+        activeP = getData(obj, "activeP");
+        voltageThd = getData(obj, "voltageThd");
+        pfC = getData(obj, "pfC");
+        voltage = getData(obj, "voltage");
+        hz = getData(obj, "hz");
+        pf = getData(obj, "pf");
+        voltageA = getData(obj, "voltageA");
+        voltageB = getData(obj, "voltageB");
+        voltageC = getData(obj, "voltageC");
+        kwh = getData(obj, "kwh");
+    }
+
+    private BigDecimal getData(JsonObject obj, String name){
+        try{
+            return obj.get(name).getAsBigDecimal();
+        }catch(Exception e){
+
+        }
+
+        return null;
     }
 }
